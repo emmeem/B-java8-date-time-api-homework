@@ -1,5 +1,6 @@
 package com.thoughtworks.capability.gtb;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 /**
@@ -11,6 +12,14 @@ import java.time.LocalDate;
 public class Practice2 {
 
   public static LocalDate getNextWorkDate(LocalDate date) {
-    return null;
+    DayOfWeek dayOfWeek = date.getDayOfWeek();
+    int dayToAdd = 1;
+    if(dayOfWeek == DayOfWeek.FRIDAY) {
+      dayToAdd = 3;
+    }
+    if(dayOfWeek == DayOfWeek.SATURDAY) {
+      dayToAdd = 2;
+    }
+    return date.plusDays(dayToAdd);
   }
 }
