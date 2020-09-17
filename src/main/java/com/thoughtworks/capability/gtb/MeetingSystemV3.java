@@ -1,6 +1,6 @@
 package com.thoughtworks.capability.gtb;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -16,26 +16,36 @@ import java.time.format.DateTimeFormatter;
  * @create 2020-05-19_18:43
  */
 public class MeetingSystemV3 {
-
   public static void main(String[] args) {
-    String timeStr = "2020-04-01 14:30:00";
+      String timeStr = "2020-04-01 14:30:00";
+      // 根据格式创建格式化类
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      // 从字符串解析得到会议时间
+      LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-    // 根据格式创建格式化类
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    // 从字符串解析得到会议时间
-    LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
+      ZonedDateTime zonedDateTime1 = meetingTime.atZone(ZoneId.of("Europe/London"));
+      ZoneOffset offset = zonedDateTime1.getOffset();
+      int totalOffSeconds = offset.getTotalSeconds();
+      meetingTime = meetingTime.plusSeconds(totalOffSeconds);
 
-    LocalDateTime now = LocalDateTime.now();
-    if (now.isAfter(meetingTime)) {
-      LocalDateTime tomorrow = now.plusDays(1);
-      int newDayOfYear = tomorrow.getDayOfYear();
-      meetingTime = meetingTime.withDayOfYear(newDayOfYear);
+      LocalDateTime now = LocalDateTime.now();
+      if (now.isAfter(meetingTime)) {
+        LocalDateTime tomorrow = now.plusDays(1);
+        int newDayOfYear = tomorrow.getDayOfYear();
+        meetingTime = meetingTime.withDayOfYear(newDayOfYear);
 
-      // 格式化新会议时间
-      String showTimeStr = formatter.format(meetingTime);
-      System.out.println(showTimeStr);
-    } else {
-      System.out.println("会议还没开始呢");
+        Period period = Period.between(meetingTime.toLocalDate(), tomorrow.toLocalDate());
+        meetingTime = LocalDateTime.from(period.addTo(meetingTime));
+
+        ZonedDateTime zonedDateTime2 = meetingTime.atZone(ZoneId.of( "America/Chicago"));
+        ZoneOffset offset2 = zonedDateTime2.getOffset();
+        int totalOffSeconds2 = offset2.getTotalSeconds();
+        meetingTime = meetingTime.plusSeconds(totalOffSeconds2);
+        // 格式化新会议时间
+        String showTimeStr = formatter.format(meetingTime);
+        System.out.println(showTimeStr);
+      } else {
+        System.out.println("会议还没开始呢");
+      }
     }
-  }
 }
