@@ -18,15 +18,17 @@ import java.time.format.DateTimeFormatter;
 public class MeetingSystemV3 {
   public static void main(String[] args) {
       String timeStr = "2020-04-01 14:30:00";
+
+      String pattern = "yyyy-MM-dd HH:mm:ss";
+      ZoneId london = ZoneId.of("Europe/London");
+      ZoneId chicago = ZoneId.of("America/Chicago");
+
       // 根据格式创建格式化类
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
       // 从字符串解析得到会议时间
       LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-      ZonedDateTime zonedDateTime1 = meetingTime.atZone(ZoneId.of("Europe/London"));
-      ZoneOffset offset = zonedDateTime1.getOffset();
-      int totalOffSeconds = offset.getTotalSeconds();
-      meetingTime = meetingTime.plusSeconds(totalOffSeconds);
+      meetingTime = convertMeetingTime(meetingTime, london);
 
       LocalDateTime now = LocalDateTime.now();
       if (now.isAfter(meetingTime)) {
@@ -37,15 +39,19 @@ public class MeetingSystemV3 {
         Period period = Period.between(meetingTime.toLocalDate(), tomorrow.toLocalDate());
         meetingTime = LocalDateTime.from(period.addTo(meetingTime));
 
-        ZonedDateTime zonedDateTime2 = meetingTime.atZone(ZoneId.of( "America/Chicago"));
-        ZoneOffset offset2 = zonedDateTime2.getOffset();
-        int totalOffSeconds2 = offset2.getTotalSeconds();
-        meetingTime = meetingTime.plusSeconds(totalOffSeconds2);
+        meetingTime = convertMeetingTime(meetingTime, chicago);
         // 格式化新会议时间
         String showTimeStr = formatter.format(meetingTime);
         System.out.println(showTimeStr);
       } else {
         System.out.println("会议还没开始呢");
       }
+    }
+
+    public static LocalDateTime convertMeetingTime(LocalDateTime meetingTime, ZoneId zoneId) {
+        ZonedDateTime zonedDateTime = meetingTime.atZone(zoneId);
+        ZoneOffset offset = zonedDateTime.getOffset();
+        int totalOffSeconds = offset.getTotalSeconds();
+        return meetingTime.plusSeconds(totalOffSeconds);
     }
 }
