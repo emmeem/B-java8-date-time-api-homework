@@ -2,6 +2,7 @@ package com.thoughtworks.capability.gtb;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 /**
  * 脑洞会议系统v3.0
@@ -20,6 +21,7 @@ public class MeetingSystemV3 {
       String timeStr = "2020-04-01 14:30:00";
 
       String pattern = "yyyy-MM-dd HH:mm:ss";
+      ZoneId local = TimeZone.getDefault().toZoneId();
       ZoneId london = ZoneId.of("Europe/London");
       ZoneId chicago = ZoneId.of("America/Chicago");
 
@@ -28,7 +30,7 @@ public class MeetingSystemV3 {
       // 从字符串解析得到会议时间
       LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-      meetingTime = convertMeetingTime(meetingTime, london);
+      meetingTime = convertMeetingTime(meetingTime, local,london);
 
       LocalDateTime now = LocalDateTime.now();
       if (now.isAfter(meetingTime)) {
@@ -39,7 +41,7 @@ public class MeetingSystemV3 {
         Period period = Period.between(meetingTime.toLocalDate(), tomorrow.toLocalDate());
         meetingTime = LocalDateTime.from(period.addTo(meetingTime));
 
-        meetingTime = convertMeetingTime(meetingTime, chicago);
+        meetingTime = convertMeetingTime(meetingTime, chicago,local );
         // 格式化新会议时间
         String showTimeStr = formatter.format(meetingTime);
         System.out.println(showTimeStr);
@@ -48,10 +50,8 @@ public class MeetingSystemV3 {
       }
     }
 
-    public static LocalDateTime convertMeetingTime(LocalDateTime meetingTime, ZoneId zoneId) {
+    public static LocalDateTime convertMeetingTime(LocalDateTime meetingTime, ZoneId local, ZoneId zoneId) {
         ZonedDateTime zonedDateTime = meetingTime.atZone(zoneId);
-        ZoneOffset offset = zonedDateTime.getOffset();
-        int totalOffSeconds = offset.getTotalSeconds();
-        return meetingTime.plusSeconds(totalOffSeconds);
+        return zonedDateTime.withZoneSameInstant(local).toLocalDateTime();
     }
 }
