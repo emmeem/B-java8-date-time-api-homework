@@ -30,16 +30,16 @@ public class MeetingSystemV3 {
       // 从字符串解析得到会议时间
       LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-      LocalDateTime meetingTimeInBeijing = convertMeetingTime(meetingTime, local,london);
+      LocalDateTime meetingTimeInBeijing = convertMeetingTime(meetingTime, london, local);
 
       LocalDateTime now = LocalDateTime.now();
       if (now.isAfter(meetingTimeInBeijing)) {
         LocalDateTime tomorrow = now.plusDays(1);
 
-        Period period = Period.between(meetingTimeInBeijing.toLocalDate(), tomorrow.toLocalDate());
+        Period period = Period.between(meetingTime.toLocalDate(), tomorrow.toLocalDate());
         meetingTimeInBeijing = LocalDateTime.from(period.addTo(meetingTime));
 
-        LocalDateTime meetingTimeInChicago = convertMeetingTime(meetingTimeInBeijing, chicago,local );
+        LocalDateTime meetingTimeInChicago = convertMeetingTime(meetingTimeInBeijing, local, chicago );
         // 格式化新会议时间
         String showTimeStr = formatter.format(meetingTimeInChicago);
         System.out.println(showTimeStr);
@@ -48,7 +48,7 @@ public class MeetingSystemV3 {
       }
     }
 
-    public static LocalDateTime convertMeetingTime(LocalDateTime meetingTime, ZoneId local, ZoneId zoneId) {
+    public static LocalDateTime convertMeetingTime(LocalDateTime meetingTime, ZoneId zoneId, ZoneId local) {
         ZonedDateTime zonedDateTime = meetingTime.atZone(zoneId);
         return zonedDateTime.withZoneSameInstant(local).toLocalDateTime();
     }
