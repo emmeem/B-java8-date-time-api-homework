@@ -16,6 +16,11 @@ public class Practice2 {
 
   public static LocalDate getNextWorkDate(LocalDate date) {
     DayOfWeek dayOfWeek = date.getDayOfWeek();
+    int dayToAdd = getAddDay(dayOfWeek);
+    return date.plusDays(dayToAdd);
+  }
+
+  public static int getAddDay(DayOfWeek dayOfWeek) {
     int dayToAdd = NEXT_WORKDAY;
     if(dayOfWeek == DayOfWeek.FRIDAY) {
       dayToAdd = NEXT_WORKDAY_NEAR_FRIDAY;
@@ -23,6 +28,6 @@ public class Practice2 {
     if(dayOfWeek == DayOfWeek.SATURDAY) {
       dayToAdd = NEXT_WORKDAY_NEAR_SATURDAY;
     }
-    return date.plusDays(dayToAdd);
+    return dayToAdd;
   }
 }
