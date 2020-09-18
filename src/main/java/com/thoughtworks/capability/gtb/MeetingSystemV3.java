@@ -30,20 +30,18 @@ public class MeetingSystemV3 {
       // 从字符串解析得到会议时间
       LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-      meetingTime = convertMeetingTime(meetingTime, local,london);
+      LocalDateTime meetingTimeInBeijing = convertMeetingTime(meetingTime, local,london);
 
       LocalDateTime now = LocalDateTime.now();
-      if (now.isAfter(meetingTime)) {
+      if (now.isAfter(meetingTimeInBeijing)) {
         LocalDateTime tomorrow = now.plusDays(1);
-        int newDayOfYear = tomorrow.getDayOfYear();
-        meetingTime = meetingTime.withDayOfYear(newDayOfYear);
 
-        Period period = Period.between(meetingTime.toLocalDate(), tomorrow.toLocalDate());
-        meetingTime = LocalDateTime.from(period.addTo(meetingTime));
+        Period period = Period.between(meetingTimeInBeijing.toLocalDate(), tomorrow.toLocalDate());
+        meetingTimeInBeijing = LocalDateTime.from(period.addTo(meetingTime));
 
-        meetingTime = convertMeetingTime(meetingTime, chicago,local );
+        LocalDateTime meetingTimeInChicago = convertMeetingTime(meetingTimeInBeijing, chicago,local );
         // 格式化新会议时间
-        String showTimeStr = formatter.format(meetingTime);
+        String showTimeStr = formatter.format(meetingTimeInChicago);
         System.out.println(showTimeStr);
       } else {
         System.out.println("会议还没开始呢");
